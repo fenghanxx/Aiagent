@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent项目搭建全流程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F7F4EF;
+            color: #1F2421;
+            padding: 3rem 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            color: #1F2421;
+        }
+
+        h1 em {
+            font-style: italic;
+            color: #C4612F;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: #5C635D;
+            font-weight: 300;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: #F2E3D6;
+            color: #C4612F;
+            padding: 0.375rem 1rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .workflow {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .phase {
+            background: #FFFFFF;
+            border: 1px solid #E7E1D7;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 2px 8px rgba(31, 36, 33, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .phase:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(31, 36, 33, 0.08);
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #E7E1D7;
+        }
+
+        .phase-number {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            background: #C4612F;
+            color: #FFFFFF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .phase-title {
+            flex: 1;
+        }
+
+        .phase-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.25rem;
+        }
+
+        .phase-subtitle {
+            color: #5C635D;
+            font-size: 0.9375rem;
+            font-weight: 300;
+        }
+
+        .steps {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.25rem;
+            padding: 1.25rem;
+            background: #FBF9F5;
+            border-radius: 12px;
+            border: 1px solid #E7E1D7;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: #F2E3D6;
+            color: #C4612F;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1F2421;
+        }
+
+        .step-content p {
+            color: #5C635D;
+            font-size: 0.9375rem;
+            font-weight: 300;
+            margin-bottom: 0.75rem;
+        }
+
+        .code-snippet {
+            background: #1F2421;
+            color: #F7F4EF;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+            overflow-x: auto;
+        }
+
+        .code-snippet code {
+            color: #F7F4EF;
+        }
+
+        .highlight {
+            color: #C4612F;
+            font-weight: 500;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .tag {
+            background: #F2E3D6;
+            color: #C4612F;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .connection-line {
+            text-align: center;
+            padding: 1rem 0;
+            color: #C4612F;
+            font-size: 1.5rem;
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #E7E1D7;
+            text-align: center;
+        }
+
+        .tip-box {
+            background: #FBF9F5;
+            border-left: 4px solid #C4612F;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .tip-box h4 {
+            color: #C4612F;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-box p {
+            color: #5C635D;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="eyebrow">完整指南</span>
+            <h1>一张图看懂<em>Agent</em>项目搭建全流程</h1>
+            <p class="subtitle">从零到部署，掌握AI Agent开发的每一个关键步骤</p>
+        </header>
+
+        <div class="workflow">
+            <!-- Phase 1: 环境准备 -->
+            <div class="phase">
+                <div class="phase-header">
+                    <div class="phase-number">1</div>
+                    <div class="phase-title">
+                        <h2>环境准备</h2>
+                        <p class="phase-subtitle">搭建开发基础设施</p>
+                    </div>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">🔧</div>
+                        <div class="step-content">
+                            <h3>安装开发工具</h3>
+                            <p>配置必要的开发环境和依赖</p>
+                            <div class="code-snippet">
+<code># 安装 Node.js (推荐 v18+)
+# 安装 Python (推荐 3.9+)
+# 安装包管理工具
+npm install -g pnpm yarn</code>
+                            </div>
+                            <div class="tag-list">
+                                <span class="tag">Node.js</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">包管理器</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">🔑</div>
+                        <div class="step-content">
+                            <h3>API密钥配置</h3>
+                            <p>获取并配置AI服务提供商的API密钥</p>
+                            <div class="code-snippet">
+<code># 创建 .env 文件
+ANTHROPIC_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_openai_key_here</code>
+                            </div>
+                            <div class="tag-list">
+                                <span class="tag">Claude API</span>
+                                <span class="tag">OpenAI</span>
+                                <span class="tag">环境变量</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connection-line">↓</div>
+
+            <!-- Phase 2: 项目初始化 -->
+            <div class="phase">
+                <div class="phase-header">
+                    <div class="phase-number">2</div>
+                    <div class="phase-title">
+                        <h2>项目初始化</h2>
+                        <p class="phase-subtitle">创建Agent项目结构</p>
+                    </div>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">📦</div>
+                        <div class="step-content">
+                            <h3>创建项目</h3>
+                            <p>使用脚手架工具快速初始化项目</p>
+                            <div class="code-snippet">
+<code># 使用 Claude Agent SDK
+npx create-agent-app my-agent
+cd my-agent
+npm install</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">📁</div>
+                        <div class="step-content">
+                            <h3>项目结构</h3>
+                            <p>理解标准的Agent项目目录组织</p>
+                            <div class="code-snippet">
+<code>my-agent/
+├── src/
+│   ├── agents/      # Agent定义
+│   ├── tools/       # 自定义工具
+│   ├── prompts/     # 提示词模板
+│   └── index.ts     # 入口文件
+├── .env             # 环境变量
+├── package.json
+└── tsconfig.json</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connection-line">↓</div>
+
+            <!-- Phase 3: Agent开发 -->
+            <div class="phase">
+                <div class="phase-header">
+                    <div class="phase-number">3</div>
+                    <div class="phase-title">
+                        <h2>Agent开发</h2>
+                        <p class="phase-subtitle">实现核心Agent逻辑</p>
+                    </div>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">🤖</div>
+                        <div class="step-content">
+                            <h3>定义Agent</h3>
+                            <p>创建Agent实例并配置基础参数</p>
+                            <div class="code-snippet">
+<code>import Anthropic from '@anthropic-ai/sdk';
+
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+const agent = {
+  model: 'claude-sonnet-5',
+  maxTokens: 4096,
+  systemPrompt: '你是一个智能助手...'
+};</code>
+                            </div>
+                            <div class="tag-list">
+                                <span class="tag">模型选择</span>
+                                <span class="tag">系统提示词</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">🛠️</div>
+                        <div class="step-content">
+                            <h3>集成工具</h3>
+                            <p>为Agent添加工具调用能力</p>
+                            <div class="code-snippet">
+<code>const tools = [
+  {
+    name: 'search',
+    description: '搜索信息',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string' }
+      }
+    }
+  }
+];</code>
+                            </div>
+                            <div class="tag-list">
+                                <span class="tag">Tool Use</span>
+                                <span class="tag">函数调用</span>
+                                <span class="tag">MCP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">💬</div>
+                        <div class="step-content">
+                            <h3>对话循环</h3>
+                            <p>实现多轮对话和工具执行逻辑</p>
+                            <div class="code-snippet">
+<code>async function runAgent(userMessage) {
+  const messages = [{ role: 'user', content: userMessage }];
+
+  while (true) {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-5',
+      messages,
+      tools
+    });
+
+    if (response.stop_reason === 'end_turn') break;
+    // 处理工具调用...
+  }
+}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connection-line">↓</div>
+
+            <!-- Phase 4: 测试与优化 -->
+            <div class="phase">
+                <div class="phase-header">
+                    <div class="phase-number">4</div>
+                    <div class="phase-title">
+                        <h2>测试与优化</h2>
+                        <p class="phase-subtitle">验证功能并提升性能</p>
+                    </div>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">🧪</div>
+                        <div class="step-content">
+                            <h3>单元测试</h3>
+                            <p>测试Agent的各个组件</p>
+                            <div class="code-snippet">
+<code># 运行测试
+npm test
+
+# 使用 claude plugin eval
+claude plugin eval run my-test-suite</code>
+                            </div>
+                            <div class="tag-list">
+                                <span class="tag">Jest</span>
+                                <span class="tag">Eval套件</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">⚡</div>
+                        <div class="step-content">
+                            <h3>性能优化</h3>
+                            <p>使用提示词缓存和批处理</p>
+                            <div class="code-snippet">
+<code>// 启用提示词缓存
+system: [
+  {
+    type: 'text',
+    text: longSystemPrompt,
+    cache_control: { type: 'ephemeral' }
+  }
+]</code>
+                            </div>
+                            <div class="tag-list">
+                                <span class="tag">Prompt Caching</span>
+                                <span class="tag">批处理</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connection-line">↓</div>
+
+            <!-- Phase 5: 部署上线 -->
+            <div class="phase">
+                <div class="phase-header">
+                    <div class="phase-number">5</div>
+                    <div class="phase-title">
+                        <h2>部署上线</h2>
+                        <p class="phase-subtitle">将Agent推向生产环境</p>
+                    </div>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">🚀</div>
+                        <div class="step-content">
+                            <h3>选择部署方式</h3>
+                            <p>根据需求选择合适的部署平台</p>
+                            <div class="tag-list">
+                                <span class="tag">Vercel</span>
+                                <span class="tag">AWS Lambda</span>
+                                <span class="tag">Docker</span>
+                                <span class="tag">云服务器</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">🔒</div>
+                        <div class="step-content">
+                            <h3>安全配置</h3>
+                            <p>保护API密钥和敏感数据</p>
+                            <div class="code-snippet">
+<code># 使用环境变量管理密钥
+# 启用速率限制
+# 添加身份验证
+# 日志监控</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">📊</div>
+                        <div class="step-content">
+                            <h3>监控运维</h3>
+                            <p>持续跟踪Agent的运行状态</p>
+                            <div class="tag-list">
+                                <span class="tag">日志分析</span>
+                                <span class="tag">性能指标</span>
+                                <span class="tag">错误追踪</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <h4>💡 最佳实践提示</h4>
+            <p><strong>提示词工程：</strong>清晰、具体的系统提示词是Agent性能的关键</p>
+            <p><strong>错误处理：</strong>为工具调用添加完善的异常处理和重试机制</p>
+            <p><strong>成本控制：</strong>使用提示词缓存可减少70%以上的token成本</p>
+            <p><strong>持续迭代：</strong>根据用户反馈不断优化Agent的能力和响应质量</p>
+        </div>
+
+        <footer>
+            <p style="color: #5C635D; font-weight: 300;">基于 Claude API 构建 • 2026</p>
+        </footer>
+    </div>
+</body>
+</html>
